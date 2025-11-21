@@ -4,18 +4,16 @@
 #include <time.h>
 
 #define MAX_WORDS 1000
-
+int best_attempt = 7;
 int game(char* answer, char* guess);
 int processGuess(char *answer, char *guess);
-int total_guesses = 0;   // Global variable to track total guesses across multiple games
-
-
+int total_guesses = 0; // Global variable to track total guesses across multiple games
 
 int main() {
     // Allocate memory for storing up to MAX_WORDS words
     char **wordsList = calloc(MAX_WORDS, sizeof(char *));
     int wordCount = 0; // Counter for number of words loaded
-    char buffer[6];   // Temporary buffer to hold each word (5 letters + null terminator)
+    char buffer[6];  // Temporary buffer to hold each word (5 letters + null terminator)
     FILE *words = fopen("words.txt", "r"); // Open words file for reading
 
     // Check if file opened successfully
@@ -26,7 +24,7 @@ int main() {
 
     // Read words from file into wordsList
     while (fscanf(words, "%5s", buffer) != EOF && wordCount < MAX_WORDS) {
-        wordsList[wordCount] = strdup(buffer);  // Duplicate string into heap memory
+        wordsList[wordCount] = strdup(buffer); // Duplicate string into heap memory
         wordCount++;
     }
     fclose(words);// Close file after reading
@@ -45,30 +43,45 @@ int main() {
 
     // Main game loop (allows replay up to 10 times)
     do {
-         // Pick a random word from the list as the answer
+        // Pick a random word from the list as the answer
         char *answer = wordsList[rand() % wordCount];
 
-         // Play one game and return number of guesses used
+        // Play one game and return number of guesses used
         int guesses_used = game(answer, guess);
-        total_guesses += guesses_used;  // Add to total guesses across games
-        
+        total_guesses += guesses_used; // Add to total guesses across games
 
         // Check win/loss condition
         if (guesses_used <= 6) {
+            if (guesses_used < best_attempt) {
+                best_attempt = guesses_used;
+            }
+
             printf("\033[92m\nYou Won!\033[0m\n");
             printf("Do you wish to play again? Enter Yes or No: ");
             scanf("%3s", response);
         } else {
             printf("\033[93mYou lost!\033[0m\n");
+            printf("The correct word was: \033[96m%s\033[0m\n", answer);
             break; // Exit loop if player lost
         }
         number_of_tries++;
     } while ((strcasecmp(response, "YES") == 0) && number_of_tries < 10);
 
-    // After finishing, show average guesses per game
+    // After finishing, show the analytics
     if (number_of_tries > 0) {
         float avg_steps = (float)total_guesses / number_of_tries;
         printf("You played Wordle %d times and guessed the word(s) in an average of %.2f steps\n", number_of_tries, avg_steps);
+        printf("Your best attempt was %d guesses\n", best_attempt);
+
+        float global_avg = 4.0;///in Asia
+        float std_dev = 1.0;
+        float z_score = (global_avg - best_attempt)/std_dev;
+        float percentile = 50.0 + (z_score * 15.0);
+
+        if (percentile < 1.0) percentile = 2.7;
+        if (percentile > 99.0) percentile = 99.0;
+
+        printf("Your best attempt ranks in the %.1f%% of Worddle players worldwide\n", percentile);
     }
 
     // Free allocated memory
@@ -86,12 +99,12 @@ int processGuess(char *answer, char *guess) {
     int correct = 0; // Count of correctly placed letters
     for (int i = 0; i < 5; i++) {
         if (guess[i] == answer[i]) {
-             // Correct letter in correct position --> green
+            // Correct letter in correct position --> green
             printf("\033[92m%c\033[0m", guess[i]);
             correct++;
         } else {
             int found = 0;
-             // Check if letter exists elsewhere in the word
+            // Check if letter exists elsewhere in the word
             for (int j = 0; j < 5; j++) {
                 if (guess[i] == answer[j] && i != j) {
                     found = 1;
@@ -99,10 +112,10 @@ int processGuess(char *answer, char *guess) {
                 }
             }
             if (found)
-                  // Correct letter but wrong position --> yellow
+            // Correct letter but wrong position --> yellow
                 printf("\033[93m%c\033[0m", guess[i]);
             else
-                 // Letter not in word --> red
+            // Letter not in word --> red
                 printf("\033[91m%c\033[0m", guess[i]);
         }
     }
@@ -117,13 +130,12 @@ int game(char* answer, char* guess) {
         printf("\033[94mEnter a 5-letter word: \033[0m");
         scanf("%5s", guess);
         guesses++;
-        
-          // If all 5 letters correct, player wins
+
+        // If all 5 letters correct, player wins
         if (processGuess(answer, guess) == 5) {
             return guesses;
         }
     }
     return 7; // Indicates loss
 }
-
 
