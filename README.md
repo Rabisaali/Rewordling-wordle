@@ -1,6 +1,6 @@
 # Rewordling Wordle 
 
-Rewordling wordle is a console-based game developed in C language to implement online wordle game efficiently as 1st semester Programming Fundamental project. A player will be given ten consecutive Wordle puzzles. However, a single failed attempt to guess the word will lead to the termination of program. At the end, the program will calculate the average number of guesses, best guess, and a percentile ranking of pre-hard coded player performance data collected from google.
+Rewordling wordle is a console-based game developed in C language to implement online wordle game efficiently as 1st semester Programming Fundamentals project. A player will be given ten consecutive Wordle puzzles. However, a single failed attempt to guess the word will lead to the termination of program. At the end, the program will calculate the average number of guesses, best guess, and a percentile ranking of pre-hard coded player performance data collected from google.
 
 ## Wordle:
 
