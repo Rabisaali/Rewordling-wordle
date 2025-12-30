@@ -11,6 +11,6 @@ Wordle is an online word puzzle game where a player has six attempts to guess a 
 * Finds out the average number of tries it took the user to judge the word
 * Finds out the best guess
 * Provides a percentile ranking
-* Provides color codeed feedback to the player
+* Provides color coded feedback to the player
 
 ## Developed By: Rabisa Ali (25K-0876) and Syeda Marium Fatima (25K-0970)
